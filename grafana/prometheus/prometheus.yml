@@ -1,0 +1,20 @@
+global:
+  scrape_interval: 15s  # Ne sıklıkla scrape işlemi yapılacak
+
+scrape_configs:
+  - job_name: 'prometheus'  # Prometheus kendi metriklerini toplar
+    static_configs:
+      - targets: ['192.168.2.108:9090']
+
+  - job_name: 'grafana'  # Grafana için Prometheus metriklerini toplar
+    static_configs:
+      - targets: ['192.168.2.108:3000']
+
+  - job_name: 'gitlab'  # GitLab metriklerini toplar
+    static_configs:
+      - targets: ['192.168.2.108:8929']
+
+  - job_name: 'pushgateway'  # Pushgateway'den metrikleri toplar
+    honor_labels: true
+    static_configs:
+      - targets: ['192.168.2.108:9091']

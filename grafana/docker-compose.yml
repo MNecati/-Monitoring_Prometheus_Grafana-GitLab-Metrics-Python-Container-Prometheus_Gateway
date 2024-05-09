@@ -1,0 +1,62 @@
+version: "3.8"
+services:
+  db:
+    container_name: postgres_container
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: test_db
+    ports:
+      - "5432:5432"
+
+  pgadmin:
+    container_name: pgadmin4_container
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5050:80"
+
+  grafana:
+    container_name: grafana_container
+    image: grafana/grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+
+  prometheus:
+    container_name: prometheus_container
+    image: prom/prometheus
+    volumes:
+      - C:/Users/mneca/OneDrive/Masaüstü/grafana/prometheus:/etc/prometheus  # Bu dizin Prometheus yapılandırma dosyalarını içerir
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9090:9090"
+
+  gitlab:
+    container_name: gitlab_container
+    image: gitlab/gitlab-ce:latest
+    hostname: 'gitlab.example.com'
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://localhost:8929'
+        prometheus['enable'] = true
+        prometheus['monitor_kubernetes'] = false
+    ports:
+      - '8929:8929'
+      - '2224:22'
+    volumes:
+      - C:/Users/mneca/OneDrive/Masaüstü/gitlab/config:/etc/gitlab
+      - C:/Users/mneca/OneDrive/Masaüstü/gitlab/logs:/var/log/gitlab
+      - C:/Users/mneca/OneDrive/Masaüstü/gitlab/data:/var/opt/gitlab
+    restart: always
